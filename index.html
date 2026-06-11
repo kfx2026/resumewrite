@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<link rel="canonical" href="https://resumewrite.pages.dev/">
+<meta charset="UTF-8">
+<meta name="msvalidate.01" content="CC13FAB9CCD33EA8A6CC4B771FF69E2F" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI简历生成器 | 中文简历 + 美式英文简历 | 免费A4打印</title>
+<meta name="description" content="免费AI简历生成工具，支持生成专业中文简历和美式英文简历(US Resume)。智能优化措辞、自动A4排版、一键导出PDF。HR视角润色，让你的简历脱颖而出。">
+<meta name="keywords" content="AI简历,简历生成器,中文简历,美式简历,US Resume,英文简历,AI resume builder,简历润色,简历排版,A4打印简历">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+<style>
+:root {
+  --ink: #1a1a2e; --muted: #5a6170; --accent: #1e3a5f;
+  --accent-light: #e8eef4; --bg: #f4f2ef; --surface: #fff;
+  --border: #d9d6d0; --radius: 6px;
+  --font-serif: 'Georgia', 'Noto Serif SC', 'SimSun', serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-sans);color:var(--ink);min-height:100vh;position:relative}
+body::before{content:'';position:fixed;inset:0;background:url('bg.jpg') center/cover no-repeat;z-index:-1;opacity:.12}
+
+/* Header */
+.header{background:var(--accent);color:#fff;padding:.8rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+.header h1{font-size:1.1rem;font-weight:600;letter-spacing:-.02em}
+.header-right{display:flex;align-items:center;gap:.8rem;font-size:.72rem}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:.25rem}
+
+/* Region Toggle */
+.region-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;gap:.4rem}
+.region-btn{padding:.4rem 1rem;border:1.5px solid var(--border);border-radius:20px;background:var(--surface);cursor:pointer;font-size:.78rem;font-weight:600;transition:all .15s;display:inline-flex;align-items:center;gap:.35rem}
+.region-btn:hover{border-color:var(--accent);color:var(--accent)}
+.region-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.region-hint{font-size:.68rem;color:var(--muted);margin-left:.8rem}
+
+/* Main layout */
+.main{display:flex;gap:0;min-height:calc(100vh - 100px)}
+
+/* Left panel */
+.panel-left{
+  width:400px;min-width:360px;background:var(--surface);
+  border-right:1px solid var(--border);padding:1.2rem;
+  display:flex;flex-direction:column;gap:.8rem;overflow-y:auto;
+  max-height:calc(100vh - 100px)
+}
+.panel-left label{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:.15rem}
+
+/* Modes */
+.modes{display:flex;gap:.3rem;flex-wrap:wrap}
+.mode-btn{padding:.3rem .6rem;border:1px solid var(--border);border-radius:16px;background:var(--surface);cursor:pointer;font-size:.7rem;transition:all .15s;white-space:nowrap}
+.mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* Templates */
+.templates{display:flex;gap:.4rem}
+.tpl-btn{width:52px;height:52px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .15s;font-size:.58rem;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3}
+.tpl-btn:hover{border-color:var(--accent)}
+.tpl-btn.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light)}
+.tpl-btn.classic{background:#fff;color:#1e3a5f}
+.tpl-btn.modern{background:#1e3a5f;color:#fff}
+.tpl-btn.minimal{background:#fafafa;color:#444}
+.tpl-btn.table{background:#fff;color:#555;border-style:solid;border-color:#999}
+
+textarea{
+  width:100%;min-height:150px;padding:.6rem;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-size:.76rem;line-height:1.6;resize:vertical;
+  font-family:var(--font-sans);color:var(--ink);background:#fafaf9
+}
+textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,58,95,.07)}
+
+.btn{padding:.45rem 1rem;border:none;border-radius:var(--radius);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:.3rem}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#152d4a}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:var(--bg);color:var(--ink);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-print{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+.btn-print:hover{background:var(--accent-light)}
+.btn-sm{padding:.28rem .6rem;font-size:.68rem}
+.toolbar{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
+
+.spinner{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+.loading .spinner{display:inline-block}.loading .btn-text{opacity:.6}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Right panel */
+.panel-right{
+  flex:1;overflow-y:auto;padding:1.5rem;
+  display:flex;flex-direction:column;align-items:center;
+  background:#e8e5df url('bg.jpg') center/cover no-repeat;
+  background-blend-mode:overlay;background-attachment:fixed
+}
+.preview-toolbar{width:210mm;max-width:100%;margin-bottom:.8rem;display:flex;gap:.4rem;justify-content:flex-end}
+
+/* === A4 Paper === */
+.resume-page{
+  width:210mm;min-height:297mm;background:#fff;
+  box-shadow:0 2px 24px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.03);
+  padding:18mm 20mm 18mm 22mm;position:relative;overflow:hidden;flex-shrink:0
+}
+.resume-page::before{
+  content:'';position:absolute;inset:-20%;
+  background-image:repeating-linear-gradient(-35deg,transparent,transparent 80px,rgba(30,58,95,.01) 80px,rgba(30,58,95,.01) 82px);
+  pointer-events:none;z-index:0
+}
+.watermark-text{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-25deg);
+  font-size:5.5rem;font-family:var(--font-serif);
+  color:rgba(30,58,95,.022);pointer-events:none;white-space:nowrap;z-index:0;
+  letter-spacing:.4em;font-weight:700
+}
+.resume-content{position:relative;z-index:1}
+
+/* === Photo Frame === */
+.photo-frame{
+  position:absolute;right:20mm;top:18mm;width:30mm;height:40mm;
+  border:1.5px dashed #c0c0c0;border-radius:3px;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;overflow:hidden;
+  background:rgba(0,0,0,.015)
+}
+.photo-frame:hover{border-color:var(--accent);background:rgba(30,58,95,.03)}
+.photo-frame span{font-size:.55rem;color:#aaa;text-align:center;line-height:1.4;pointer-events:none}
+.photo-frame img{width:100%;height:100%;object-fit:cover}
+.photo-frame.has-photo{border-style:solid;border-color:var(--border)}
+.photo-frame input{display:none}
+.photo-frame.hidden{display:none}
+
+/* Resume typography */
+.resume-name{font-family:var(--font-serif);font-size:1.7rem;font-weight:700;color:var(--accent);letter-spacing:.04em;margin-bottom:.1rem;max-width:65%}
+.resume-title{font-size:.85rem;color:var(--muted);margin-bottom:.35rem}
+.resume-contact{font-size:.7rem;color:var(--muted);display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1.5px solid var(--accent)}
+.resume-contact span{display:inline-flex;align-items:center;gap:.15rem}
+
+.section-title{
+  font-family:var(--font-serif);font-size:.82rem;font-weight:700;color:var(--accent);
+  text-transform:uppercase;letter-spacing:.1em;margin:1rem 0 .45rem;
+  padding-bottom:.2rem;border-bottom:1px solid var(--accent-light)
+}
+.resume-summary{font-size:.74rem;line-height:1.6;color:var(--ink);margin-bottom:.5rem}
+
+/* Experience */
+.exp-item{margin-bottom:.75rem}
+.exp-header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;margin-bottom:.2rem}
+.exp-company{font-weight:700;font-size:.78rem}
+.exp-role{font-size:.74rem;color:var(--muted);margin-left:.4rem}
+.exp-period{font-size:.67rem;color:var(--muted);white-space:nowrap}
+.exp-highlights{list-style:none;padding:0}
+.exp-highlights li{font-size:.72rem;line-height:1.55;color:var(--ink);padding-left:.8rem;position:relative;margin-bottom:.12rem}
+.exp-highlights li::before{content:'';position:absolute;left:0;top:.5em;width:4px;height:4px;border-radius:50%;background:var(--accent);opacity:.5}
+
+/* Education */
+.edu-item{margin-bottom:.45rem}
+.edu-header{display:flex;justify-content:space-between;flex-wrap:wrap}
+.edu-school{font-weight:700;font-size:.76rem}
+.edu-degree{font-size:.74rem;color:var(--muted)}
+.edu-period{font-size:.67rem;color:var(--muted);white-space:nowrap}
+
+.skills-text{font-size:.74rem;line-height:1.65;color:var(--ink)}
+
+/* ========== TABLE 模板 ========== */
+.resume-page.tpl-table{padding:15mm 18mm;font-family:var(--font-sans)}
+.resume-page.tpl-table::before{display:none}
+.resume-page.tpl-table .watermark-text{color:rgba(0,0,0,.018);font-size:4rem}
+.resume-page.tpl-table .photo-frame{right:18mm;top:15mm;width:28mm;height:38mm;border:1px solid #666;border-radius:0}
+.resume-page.tpl-table .resume-name{font-size:1.3rem;color:#111;border-bottom:2px solid #333;padding-bottom:.4rem;margin-bottom:.5rem;max-width:100%}
+.resume-page.tpl-table .resume-contact{border-bottom:none;font-size:.68rem;gap:1.2rem}
+.resume-page.tpl-table .section-title{
+  font-family:var(--font-sans);font-size:.72rem;font-weight:700;letter-spacing:0;
+  background:#f5f5f5;padding:.25rem .5rem;border-bottom:1px solid #999;
+  border-left:3px solid #333;margin:1rem 0 .4rem;color:#222
+}
+.resume-page.tpl-table .exp-item{border-bottom:1px dotted #ddd;padding-bottom:.4rem;margin-bottom:.4rem}
+.resume-page.tpl-table .exp-item:last-child{border-bottom:none}
+.resume-page.tpl-table .exp-highlights li::before{content:'•';background:none;color:#666;font-size:.65rem;left:0;top:.45em}
+.resume-page.tpl-table .edu-item{border-bottom:1px dotted #eee;padding-bottom:.3rem}
+.resume-page.tpl-table .edu-item:last-child{border-bottom:none}
+.resume-page.tpl-table{border:1px solid #999;box-shadow:0 0 0 4px #fff,0 0 0 5px #ccc}
+
+/* ========== MODERN 模板 ========== */
+.resume-page.tpl-modern{background:linear-gradient(180deg,#1e3a5f 110px,#fff 110px);padding-top:0}
+.resume-page.tpl-modern .resume-name{color:#fff;max-width:100%}
+.resume-page.tpl-modern .resume-contact{border-bottom-color:rgba(255,255,255,.3);color:rgba(255,255,255,.8);padding-top:2.2rem}
+.resume-page.tpl-modern .resume-title{color:rgba(255,255,255,.7)}
+.resume-page.tpl-modern .section-title{color:#1e3a5f}
+.resume-page.tpl-modern .photo-frame{top:2.5rem}
+.resume-page.tpl-modern .photo-frame span{color:rgba(255,255,255,.5)}
+.resume-page.tpl-modern .photo-frame{border-color:rgba(255,255,255,.35)}
+
+/* ========== MINIMAL 模板 ========== */
+.resume-page.tpl-minimal{padding:22mm 24mm}
+.resume-page.tpl-minimal .resume-name{font-size:1.4rem;color:#111;font-weight:400;letter-spacing:.1em}
+.resume-page.tpl-minimal .section-title{font-weight:400;letter-spacing:.15em;color:#111;border-bottom-color:#e5e5e5}
+.resume-page.tpl-minimal .resume-contact{border-bottom-color:#e5e5e5}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:350px;color:var(--muted);text-align:center;gap:.35rem}
+.empty-state svg{opacity:.25;margin-bottom:.35rem}
+
+/* ========== Features / SEO Section ========== */
+.seo-section{max-width:1100px;margin:3rem auto;padding:0 2rem}
+.seo-section h2{font-size:1.3rem;font-weight:700;color:var(--accent);margin-bottom:1.2rem;text-align:center}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.2rem;margin-bottom:2.5rem}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.2rem;transition:box-shadow .2s}
+.feature-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.feature-card h3{font-size:.85rem;font-weight:700;margin-bottom:.4rem;color:var(--ink)}
+.feature-card p{font-size:.74rem;line-height:1.6;color:var(--muted)}
+.faq-list{max-width:750px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border);padding:1rem 0}
+.faq-item summary{font-size:.82rem;font-weight:600;cursor:pointer;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center}
+.faq-item summary::after{content:'+';font-size:1.1rem;color:var(--muted);transition:transform .2s}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-item p{font-size:.74rem;line-height:1.7;color:var(--muted);margin-top:.5rem}
+
+/* ========== Print ========== */
+@media print{
+  body{background:#fff}
+  body::before{display:none!important}
+  .header,.panel-left,.preview-toolbar,.region-bar,.seo-section,.smart-footer{display:none!important}
+  .panel-right{background:#fff;padding:0;overflow:visible}
+  .main{display:block}
+  .resume-page{width:210mm;min-height:297mm;box-shadow:none;margin:0;page-break-after:always}
+  @page{size:A4;margin:0}
+}
+
+/* ========== Responsive ========== */
+@media(max-width:900px){
+  .main{flex-direction:column}
+  .panel-left{width:100%;min-width:auto;max-height:none;border-right:none;border-bottom:1px solid var(--border)}
+  .panel-right{padding:.8rem}
+  .resume-page{width:100%;padding:1rem;min-height:auto}
+  .resume-page.tpl-modern{padding-top:0}
+  .resume-name{font-size:1.15rem;max-width:60%}
+  .photo-frame{opacity:.5}
+  .region-bar{padding:.5rem 1rem}
+  .seo-section{padding:0 1rem}
+}
+@media print{
+  .photo-frame:not(.has-photo) span{display:none}
+  .photo-frame:not(.has-photo){border:1px solid #ccc;opacity:.3}
+}
+
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:.5rem 1.4rem;border-radius:20px;font-size:.75rem;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* US Resume specific - full width name */
+.region-us .resume-name{max-width:100%}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1>📄 AI简历生成器 <span style="font-size:.7rem;font-weight:400;opacity:.7">Resume Builder</span></h1>
+  <div class="header-right"><span class="status-dot"></span>AI 就绪 · 免费使用</div>
+</header>
+
+<!-- 区域切换 -->
+<div class="region-bar">
+  <button class="region-btn active" data-region="cn" onclick="switchRegion('cn')">🇨🇳 中文简历</button>
+  <button class="region-btn" data-region="us" onclick="switchRegion('us')">🇺🇸 美式简历 US Resume</button>
+  <span class="region-hint" id="regionHint">适用于中国大陆求职（含照片、中文排版）</span>
+</div>
+
+<div class="main">
+
+  <!-- ====== 左侧 ====== -->
+  <div class="panel-left">
+    <div>
+      <label id="modeLabel">润色风格</label>
+      <div class="modes" id="modes">
+        <!-- 中文模式 -->
+        <button class="mode-btn active" data-mode="standard">通用专业</button>
+        <button class="mode-btn" data-mode="tech">互联网/科技</button>
+        <button class="mode-btn" data-mode="management">高管/管理</button>
+        <button class="mode-btn" data-mode="graduate">应届生/校招</button>
+      </div>
+    </div>
+
+    <div>
+      <label>模板样式</label>
+      <div class="templates" id="templates">
+        <button class="tpl-btn classic active" data-tpl="classic">经典<br>专业</button>
+        <button class="tpl-btn table" data-tpl="table">表格<br>正式</button>
+        <button class="tpl-btn modern" data-tpl="modern">现代<br>深色</button>
+        <button class="tpl-btn minimal" data-tpl="minimal">极简<br>白</button>
+      </div>
+    </div>
+
+    <div>
+      <label id="inputLabel">粘贴原始简历</label>
+      <textarea id="resumeInput" placeholder="把你的原始简历粘贴在这里，AI会自动识别姓名、联系方式、工作经历、教育背景，排版成A4打印简历...
+
+例：
+张三 | 138xxxx | zhang@xx.com | 期望：产品经理
+
+字节跳动 产品经理 2020-2022
+· 主导XX功能0-1上线，DAU从0增长到50万
+· 推动3次大版本迭代，用户留存提升15%
+
+北京大学 计算机科学 本科 2016-2020"></textarea>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" id="polishBtn" onclick="polishResume()">
+        <span class="spinner"></span><span class="btn-text">✨ AI 生成简历</span>
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="clearAll()">清空</button>
+      <span style="font-size:.68rem;color:var(--muted)" id="charCount">0 字</span>
+    </div>
+
+    <!-- 使用提示 -->
+    <div style="background:var(--accent-light);border-radius:6px;padding:.7rem;font-size:.68rem;line-height:1.6;color:var(--muted)">
+      <strong style="color:var(--accent)" id="tipTitle">💡 使用提示</strong>
+      <p id="tipContent">粘贴任何格式的简历文本，AI会自动识别并润色排版。支持从Word/PDF复制粘贴。生成后可直接打印为A4纸或导出PDF。</p>
+    </div>
+  </div>
+
+  <!-- ====== 右侧预览 ====== -->
+  <div class="panel-right">
+    <div class="preview-toolbar" id="previewToolbar" style="display:none">
+      <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ 打印/PDF</button>
+      <button class="btn btn-secondary btn-sm" onclick="copyText()">📋 复制文本</button>
+    </div>
+
+    <div class="resume-page tpl-classic" id="resumePage">
+      <!-- 照片框 -->
+      <div class="photo-frame" id="photoFrame" onclick="document.getElementById('photoInput').click()" title="点击上传证件照">
+        <span>贴<br>照片</span>
+      </div>
+      <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(event)" style="display:none">
+
+      <div class="watermark-text" id="watermark">RESUME</div>
+      <div class="resume-content" id="resumeContent">
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <p style="font-size:.8rem" id="emptyTitle">粘贴简历 → 点击「AI 生成简历」</p>
+          <p style="font-size:.68rem" id="emptySubtitle">自动生成 A4 排版，支持打印 / 导出 PDF</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ====== SEO 内容区 ====== -->
+<section class="seo-section">
+  <h2>为什么选择我们的 AI 简历生成器？</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <h3>🇨🇳 中文简历专业版</h3>
+      <p>针对中国大陆求职市场优化。支持互联网/科技、高管/管理、应届生/校招等多种风格。自动生成A4排版，含照片框，符合国内HR阅读习惯。</p>
+    </div>
+    <div class="feature-card">
+      <h3>🇺🇸 美式简历(US Resume)</h3>
+      <p>遵循美国求职市场标准：无照片、强动词开头、成果量化、ATS友好。支持Tech/Engineering、Marketing、Finance、Academic等行业模板。</p>
+    </div>
+    <div class="feature-card">
+      <h3>🤖 AI 智能润色</h3>
+      <p>基于HR视角的AI润色引擎，自动将"负责XX工作"改写为"主导XX项目，实现YY增长Z%"。每条经历都包含量化数据，让简历更有说服力。</p>
+    </div>
+    <div class="feature-card">
+      <h3>🖨️ 一键打印 / PDF</h3>
+      <p>生成的简历严格按照A4纸面尺寸排版，点击打印按钮即可直接输出高质量PDF，无需额外工具。</p>
+    </div>
+    <div class="feature-card">
+      <h3>🔒 隐私安全</h3>
+      <p>我们不存储任何简历内容。所有数据仅在生成过程中使用，生成完成后立即销毁。无需注册，无需登录。</p>
+    </div>
+    <div class="feature-card">
+      <h3>💯 完全免费</h3>
+      <p>所有功能完全免费，无隐藏收费，无使用次数限制。中文简历和美式简历均可无限生成。</p>
+    </div>
+  </div>
+
+  <h2>常见问题 FAQ</h2>
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary>中文简历和美式简历有什么区别？</summary>
+      <p>中文简历适用于中国大陆求职，通常包含证件照、期望薪资等信息，排版偏正式。美式简历(US Resume)适用于美国及英语国家求职，严格禁止照片、年龄、婚姻状况等个人信息，强调成果量化和ATS关键词匹配。我们的工具会根据你选择的区域自动调整格式和内容风格。</p>
+    </details>
+    <details class="faq-item">
+      <summary>AI会编造虚假信息吗？</summary>
+      <p>不会。我们的AI严格遵循"忠于事实，不编造"原则，所有润色内容均基于你提供的原始信息。AI只会优化措辞、调整结构、补充量化表达，不会凭空捏造经历或数据。如果原文缺少具体数字，AI会标注为估算值。</p>
+    </details>
+    <details class="faq-item">
+      <summary>支持哪些简历格式输入？</summary>
+      <p>支持任何纯文本格式。你可以直接从Word文档、PDF、招聘网站复制粘贴简历内容。AI会自动识别姓名、联系方式、工作经历、教育背景等结构。无需特定格式，随意粘贴即可。</p>
+    </details>
+    <details class="faq-item">
+      <summary>生成的简历可以直接用于投递吗？</summary>
+      <p>可以。生成后点击"打印/PDF"按钮，在打印对话框中选择"另存为PDF"即可获得标准A4格式的PDF文件，可直接用于简历投递。建议生成后仔细检查一遍内容，确保所有信息准确。</p>
+    </details>
+    <details class="faq-item">
+      <summary>美式简历为什么不能放照片？</summary>
+      <p>美国联邦法律(Title VII of the Civil Rights Act)禁止基于种族、性别、年龄等因素的就业歧视。为避免法律风险，美国雇主通常要求简历中不包含照片、年龄、婚姻状况、宗教等个人信息。我们的美式模式会自动隐藏照片框。</p>
+    </details>
+    <details class="faq-item">
+      <summary>数据安全如何保障？</summary>
+      <p>我们承诺：1) 不存储任何用户简历内容；2) 不使用Cookie追踪用户；3) 不投放任何广告追踪代码；4) 所有通信使用HTTPS加密。你的简历数据仅在AI处理的几秒钟内存在于内存中，处理完成后立即释放。</p>
+    </details>
+  </div>
+</section>
+
+<!-- Smart Footer -->
+<footer class="smart-footer" style="display:block;width:100%;max-width:1200px;margin:60px auto 0;padding:32px 24px;border-top:1px solid #e0e0e0;font-size:13px;line-height:2;color:#666;text-align:center">
+  <div style="max-width:900px;margin:0 auto">
+    <p style="font-size:14px;font-weight:700;margin-bottom:12px;color:#333">🌐 Our Network</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin-bottom:16px">
+      <span>🏥 <a href="https://cnhospitalmap.help/" style="color:#666;text-decoration:none">ChinaMed Directory</a></span>
+      <span>🎓 <a href="https://chinaunilist.top/" style="color:#666;text-decoration:none">China University List</a></span>
+      <span>🍜 <a href="https://food.eastculture.top/" style="color:#666;text-decoration:none">Chinese Food Explorer</a></span>
+      <span>🏯 <a href="https://travel.eastculture.top/" style="color:#666;text-decoration:none">Eastern Travel Guide</a></span>
+      <span>🐾 <a href="https://petlegend.top/" style="color:#666;text-decoration:none">PetGuardian</a></span>
+      <span>💼 <a href="https://airesumeguru.top/" style="color:#666;text-decoration:none">AI Resume Guru</a></span>
+      <span>📈 <a href="https://globalshortvideotrend.top/" style="color:#666;text-decoration:none">Short Video Trend</a></span>
+      <span>💪 <a href="https://healthlab.beauty/" style="color:#666;text-decoration:none">FitHer</a></span>
+      <span>👕 <a href="https://logotee.top/" style="color:#666;text-decoration:none">LogoTee</a></span>
+      <span>🛠 <a href="https://devtools.aichatmail.one/" style="color:#666;text-decoration:none">DevTools Pro</a></span>
+      <span>📱 <a href="https://qr.qr2mail.top/" style="color:#666;text-decoration:none">QR Generator</a></span>
+      <span>❤ <a href="https://healthcalc.aichatmail.one/" style="color:#666;text-decoration:none">Health Calculator</a></span>
+    </div>
+    <p style="font-size:11px;color:#999">© 2026 AI Digital Creator Hub. Free tools — no tracking, no analytics.</p>
+  </div>
+</footer>
+
+<script>
+const API = '/api/polish';
+let currentRegion = 'cn', currentMode = 'standard', currentTpl = 'classic', resumeData = null;
+
+// ---- 区域模式数据 ----
+const MODES = {
+  cn: [
+    { id: 'standard', label: '通用专业' },
+    { id: 'tech', label: '互联网/科技' },
+    { id: 'management', label: '高管/管理' },
+    { id: 'graduate', label: '应届生/校招' }
+  ],
+  us: [
+    { id: 'us_standard', label: 'Standard' },
+    { id: 'us_tech', label: 'Tech / Engineering' },
+    { id: 'us_marketing', label: 'Marketing / Sales' },
+    { id: 'us_finance', label: 'Finance / Consulting' },
+    { id: 'us_academic', label: 'Academic / Research' }
+  ]
+};
+
+const PLACEHOLDERS = {
+  cn: `把你的原始简历粘贴在这里，AI会自动识别姓名、联系方式、工作经历、教育背景，排版成A4打印简历...
+
+例：
+张三 | 138xxxx | zhang@xx.com | 期望：产品经理
+
+字节跳动 产品经理 2020-2022
+· 主导XX功能0-1上线，DAU从0增长到50万
+· 推动3次大版本迭代，用户留存提升15%
+
+北京大学 计算机科学 本科 2016-2020`,
+  us: `Paste your resume content here. AI will automatically parse your information and generate a professional US-format resume...
+
+Example:
+John Smith | (555) 123-4567 | john@email.com | San Francisco, CA
+
+Google - Senior Product Manager (2020-2023)
+• Led cross-functional team of 12 to launch payment feature, driving $5M ARR
+• Improved user retention by 23% through data-driven onboarding optimization
+
+Stanford University - MBA, 2018-2020
+UC Berkeley - BS Computer Science, 2014-2018`
+};
+
+const SECTION_LABELS = {
+  cn: { summary: '个人简介', experience: '工作经历', education: '教育背景', skills: '专业技能', certificates: '证书资质', languages: '语言能力' },
+  us: { summary: 'Professional Summary', experience: 'Experience', education: 'Education', skills: 'Skills', certificates: 'Certifications', languages: 'Languages' }
+};
+
+// ---- 区域切换 ----
+function switchRegion(region) {
+  currentRegion = region;
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.toggle('active', b.dataset.region === region));
+
+  // 更新模式按钮
+  const modesEl = document.getElementById('modes');
+  modesEl.innerHTML = MODES[region].map((m, i) =>
+    `<button class="mode-btn${i===0?' active':''}" data-mode="${m.id}">${m.label}</button>`
+  ).join('');
+  currentMode = MODES[region][0].id;
+
+  // 更新UI文字
+  const isUS = region === 'us';
+  document.getElementById('modeLabel').textContent = isUS ? 'Industry Style' : '润色风格';
+  document.getElementById('inputLabel').textContent = isUS ? 'Paste Your Resume' : '粘贴原始简历';
+  document.getElementById('resumeInput').placeholder = PLACEHOLDERS[region];
+  document.getElementById('regionHint').textContent = isUS
+    ? 'US format: No photo, ATS-optimized, achievement-driven'
+    : '适用于中国大陆求职（含照片、中文排版）';
+  document.getElementById('tipTitle').textContent = isUS ? '💡 Tips' : '💡 使用提示';
+  document.getElementById('tipContent').textContent = isUS
+    ? 'Paste any format of resume text. AI will restructure it following US resume conventions: strong action verbs, quantified achievements, ATS-friendly keywords. Click Print to export as PDF.'
+    : '粘贴任何格式的简历文本，AI会自动识别并润色排版。支持从Word/PDF复制粘贴。生成后可直接打印为A4纸或导出PDF。';
+
+  // 照片框显示/隐藏
+  const photoFrame = document.getElementById('photoFrame');
+  if (isUS) {
+    photoFrame.classList.add('hidden');
+    document.getElementById('resumePage').classList.add('region-us');
+  } else {
+    photoFrame.classList.remove('hidden');
+    document.getElementById('resumePage').classList.remove('region-us');
+  }
+
+  // 更新空状态文字
+  document.getElementById('emptyTitle').textContent = isUS
+    ? 'Paste resume → Click "AI Generate Resume"'
+    : '粘贴简历 → 点击「AI 生成简历」';
+  document.getElementById('emptySubtitle').textContent = isUS
+    ? 'Auto-generate A4 layout, print-ready PDF'
+    : '自动生成 A4 排版，支持打印 / 导出 PDF';
+
+  // 按钮文字
+  document.querySelector('#polishBtn .btn-text').textContent = isUS ? '✨ AI Generate Resume' : '✨ AI 生成简历';
+
+  // 清空预览
+  clearAll();
+}
+
+// ---- 模式选择 ----
+document.getElementById('modes').addEventListener('click', e => {
+  if(!e.target.classList.contains('mode-btn')) return;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  currentMode = e.target.dataset.mode;
+});
+
+// ---- 模板 ----
+document.getElementById('templates').addEventListener('click', e => {
+  const btn = e.target.closest('.tpl-btn'); if(!btn) return;
+  document.querySelectorAll('.tpl-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTpl = btn.dataset.tpl;
+  const page = document.getElementById('resumePage');
+  page.className = 'resume-page tpl-'+currentTpl + (currentRegion==='us'?' region-us':'');
+  if(resumeData) renderResume(resumeData);
+});
+
+// ---- 字数 ----
+document.getElementById('resumeInput').addEventListener('input', e => {
+  document.getElementById('charCount').textContent = e.target.value.length + (currentRegion==='cn'?' 字':' chars');
+});
+
+// ---- 照片上传 ----
+function handlePhoto(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const frame = document.getElementById('photoFrame');
+    frame.innerHTML = '<img src="'+ev.target.result+'" alt="photo">';
+    frame.classList.add('has-photo');
+    frame.title = '点击更换照片';
+    e.target.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---- AI 润色 ----
+async function polishResume() {
+  const resume = document.getElementById('resumeInput').value.trim();
+  if(!resume || resume.length < 10){
+    showToast(currentRegion==='cn'?'请粘贴至少10个字的内容':'Please paste at least 10 characters');
+    return;
+  }
+  const btn = document.getElementById('polishBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+  document.getElementById('previewToolbar').style.display = 'none';
+
+  try {
+    const resp = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ resume, mode: currentMode, region: currentRegion })
+    });
+    const data = await resp.json();
+    if(data.error){
+      document.getElementById('resumeContent').innerHTML = '<div class="empty-state"><p style="color:#c53030">'+esc(data.error)+'</p></div>';
+      return;
+    }
+    resumeData = data;
+    const photoFrame = document.getElementById('photoFrame');
+    const hadPhoto = photoFrame.classList.contains('has-photo');
+    const photoHTML = hadPhoto ? photoFrame.innerHTML : '';
+    renderResume(data);
+    if(hadPhoto && currentRegion==='cn'){ photoFrame.innerHTML = photoHTML; photoFrame.classList.add('has-photo'); }
+    document.getElementById('previewToolbar').style.display = 'flex';
+    document.getElementById('watermark').textContent = data.name || 'RESUME';
+    showToast(currentRegion==='cn'?'✅ 排版完成！可打印A4':'✅ Resume generated! Ready to print');
+
+  } catch(e){
+    document.getElementById('resumeContent').innerHTML = '<div class="empty-state"><p style="color:#c53030">Network Error: '+esc(e.message)+'</p></div>';
+  } finally{ btn.classList.remove('loading'); btn.disabled = false; }
+}
+
+// ---- 渲染 ----
+function renderResume(d) {
+  const labels = SECTION_LABELS[currentRegion];
+  const p = [];
+
+  if(d.name) p.push(`<div class="resume-name">${esc(d.name)}</div>`);
+  if(d.title) p.push(`<div class="resume-title">${esc(d.title)}</div>`);
+  const ci = [];
+  if(d.phone) ci.push(`<span>📱 ${esc(d.phone)}</span>`);
+  if(d.email) ci.push(`<span>📧 ${esc(d.email)}</span>`);
+  if(d.location) ci.push(`<span>📍 ${esc(d.location)}</span>`);
+  if(d.linkedin) ci.push(`<span>🔗 ${esc(d.linkedin)}</span>`);
+  if(d.website) ci.push(`<span>🌐 ${esc(d.website)}</span>`);
+  if(ci.length) p.push(`<div class="resume-contact">${ci.join('')}</div>`);
+
+  if(d.summary){ p.push(`<div class="section-title">${labels.summary}</div>`); p.push(`<div class="resume-summary">${esc(d.summary)}</div>`); }
+
+  if(d.experience && d.experience.length){
+    p.push(`<div class="section-title">${labels.experience}</div>`);
+    d.experience.forEach(e=>{
+      p.push(`<div class="exp-item"><div class="exp-header"><span><span class="exp-company">${esc(e.company)}</span>${e.role?`<span class="exp-role">${esc(e.role)}</span>`:''}</span>${e.period?`<span class="exp-period">${esc(e.period)}</span>`:''}</div>`);
+      if(e.highlights && e.highlights.length){ p.push('<ul class="exp-highlights">'); e.highlights.forEach(h=>p.push(`<li>${esc(h)}</li>`)); p.push('</ul>'); }
+      p.push('</div>');
+    });
+  }
+
+  if(d.education && d.education.length){
+    p.push(`<div class="section-title">${labels.education}</div>`);
+    d.education.forEach(e=>{
+      p.push(`<div class="edu-item"><div class="edu-header"><span><span class="edu-school">${esc(e.school)}</span>${e.degree?`<span class="edu-degree"> · ${esc(e.degree)}</span>`:''}${e.major?`<span class="edu-degree"> · ${esc(e.major)}</span>`:''}</span>${e.period?`<span class="edu-period">${esc(e.period)}</span>`:''}</div></div>`);
+    });
+  }
+
+  if(d.skills){ p.push(`<div class="section-title">${labels.skills}</div>`); p.push(`<div class="skills-text">${esc(d.skills)}</div>`); }
+  if(d.certificates){ p.push(`<div class="section-title">${labels.certificates}</div>`); p.push(`<div class="skills-text">${esc(d.certificates)}</div>`); }
+  if(d.languages){ p.push(`<div class="section-title">${labels.languages}</div>`); p.push(`<div class="skills-text">${esc(d.languages)}</div>`); }
+  if(d.projects && d.projects.length){
+    p.push(`<div class="section-title">${currentRegion==='cn'?'项目经历':'Projects'}</div>`);
+    d.projects.forEach(e=>{
+      p.push(`<div class="exp-item"><div class="exp-header"><span><span class="exp-company">${esc(e.name||e.company||'')}</span>${e.role?`<span class="exp-role">${esc(e.role)}</span>`:''}</span>${e.period?`<span class="exp-period">${esc(e.period)}</span>`:''}</div>`);
+      if(e.highlights && e.highlights.length){ p.push('<ul class="exp-highlights">'); e.highlights.forEach(h=>p.push(`<li>${esc(h)}</li>`)); p.push('</ul>'); }
+      p.push('</div>');
+    });
+  }
+
+  document.getElementById('resumeContent').innerHTML = p.join('\n');
+}
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function clearAll(){
+  document.getElementById('resumeInput').value = '';
+  document.getElementById('charCount').textContent = currentRegion==='cn'?'0 字':'0 chars';
+  document.getElementById('resumeContent').innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><p style="font-size:.8rem" id="emptyTitle">${currentRegion==='cn'?'粘贴简历 → 点击「AI 生成简历」':'Paste resume → Click "AI Generate Resume"'}</p><p style="font-size:.68rem" id="emptySubtitle">${currentRegion==='cn'?'自动生成 A4 排版，支持打印 / 导出 PDF':'Auto-generate A4 layout, print-ready PDF'}</p></div>`;
+  document.getElementById('previewToolbar').style.display = 'none';
+  document.getElementById('watermark').textContent = 'RESUME';
+  if(currentRegion==='cn'){
+    document.getElementById('photoFrame').innerHTML = '<span>贴<br>照片</span>';
+    document.getElementById('photoFrame').classList.remove('has-photo');
+  }
+  resumeData = null;
+}
+
+function copyText(){
+  if(!resumeData) return;
+  let t = '';
+  if(resumeData.name) t += resumeData.name+'\n';
+  if(resumeData.title) t += resumeData.title+'\n';
+  if(resumeData.phone) t += resumeData.phone+'  ';
+  if(resumeData.email) t += resumeData.email+'\n';
+  if(resumeData.location) t += resumeData.location+'\n\n';
+  if(resumeData.summary) t += resumeData.summary+'\n\n';
+  const labels = SECTION_LABELS[currentRegion];
+  if(resumeData.experience){ t += labels.experience+'\n'; resumeData.experience.forEach(e=>{ t += e.company+'  '+(e.role||'')+'  '+(e.period||'')+'\n'; (e.highlights||[]).forEach(h=>t += '• '+h+'\n'); t+='\n'; }); }
+  if(resumeData.education){ t += labels.education+'\n'; resumeData.education.forEach(e=>{ t += e.school+'  '+(e.degree||'')+' '+(e.major||'')+'  '+(e.period||'')+'\n'; }); }
+  if(resumeData.skills) t += '\n'+labels.skills+': '+resumeData.skills+'\n';
+  navigator.clipboard.writeText(t).then(()=>showToast(currentRegion==='cn'?'已复制到剪贴板':'Copied to clipboard'));
+}
+
+function showToast(m){
+  const el = document.getElementById('toast');
+  el.textContent = m; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
