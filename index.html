@@ -316,12 +316,18 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba
       <strong style="color:var(--accent)" id="tipTitle">💡 使用提示</strong>
       <p id="tipContent">粘贴任何格式的简历文本，AI会自动识别并润色排版。支持从Word/PDF复制粘贴。生成后可直接打印为A4纸或导出PDF。</p>
     </div>
+
+    <!-- 广告位 -->
+    <div id="adSidebar" style="background:#f8f8f7;border:1px dashed #ddd;border-radius:6px;padding:.5rem;text-align:center;font-size:.6rem;color:#ccc;min-height:120px;display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <span>广告 Ad Space</span>
+    </div>
   </div>
 
   <!-- ====== 右侧预览 ====== -->
   <div class="panel-right">
     <div class="preview-toolbar" id="previewToolbar" style="display:none">
-      <button class="btn btn-print btn-sm" onclick="window.print()">🖨️ 打印/PDF</button>
+      <button class="btn btn-primary btn-sm" onclick="downloadPDF()">📥 下载PDF</button>
+      <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨️ 打印</button>
       <button class="btn btn-secondary btn-sm" onclick="copyText()">📋 复制文本</button>
     </div>
 
@@ -411,6 +417,15 @@ textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba
 <!-- Smart Footer -->
 <footer class="smart-footer" style="display:block;width:100%;max-width:1200px;margin:60px auto 0;padding:32px 24px;border-top:1px solid #e0e0e0;font-size:13px;line-height:2;color:#666;text-align:center">
   <div style="max-width:900px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-bottom:16px;font-size:13px">
+      <a href="/about" style="color:#1e3a5f;text-decoration:none;font-weight:600">About 关于</a>
+      <span style="color:#ccc">|</span>
+      <a href="/privacy" style="color:#1e3a5f;text-decoration:none;font-weight:600">Privacy 隐私</a>
+      <span style="color:#ccc">|</span>
+      <a href="/terms" style="color:#1e3a5f;text-decoration:none;font-weight:600">Terms 条款</a>
+      <span style="color:#ccc">|</span>
+      <span style="color:#666">📧 178577324@qq.com</span>
+    </div>
     <p style="font-size:14px;font-weight:700;margin-bottom:12px;color:#333">🌐 Our Network</p>
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin-bottom:16px">
       <span>🏥 <a href="https://cnhospitalmap.help/" style="color:#666;text-decoration:none">ChinaMed Directory</a></span>
@@ -681,6 +696,19 @@ function copyText(){
   if(resumeData.education){ t += labels.education+'\n'; resumeData.education.forEach(e=>{ t += e.school+'  '+(e.degree||'')+' '+(e.major||'')+'  '+(e.period||'')+'\n'; }); }
   if(resumeData.skills) t += '\n'+labels.skills+': '+resumeData.skills+'\n';
   navigator.clipboard.writeText(t).then(()=>showToast(currentRegion==='cn'?'已复制到剪贴板':'Copied to clipboard'));
+}
+
+function downloadPDF(){
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = currentRegion==='cn'?'⏳ 生成中...':'⏳ Generating...';
+  btn.disabled = true;
+  // 用打印对话框导出PDF（所有浏览器原生支持）
+  setTimeout(()=>{
+    window.print();
+    btn.textContent = orig;
+    btn.disabled = false;
+  },150);
 }
 
 function showToast(m){

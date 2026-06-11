@@ -11,7 +11,11 @@ export async function onRequest(context) {
 
   const abuse = await checkAbuse(request, {
     maxBodySize: 20000,
-    allowedOrigins: ['http://localhost:5173', 'http://localhost:3000'],
+    allowedOrigins: [
+      'http://localhost:5173', 'http://localhost:3000',
+      'https://resumewrite.pages.dev',
+      'https://*.resumewrite.pages.dev'
+    ],
   });
   if (abuse.blocked) return abuse.response;
 
